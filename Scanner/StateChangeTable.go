@@ -33,7 +33,7 @@ func fillSingleDelimiter(m *map[rune]int, t int) {
 
 func fillDoubleDelimiter(m *map[rune]int, t int) {
 	//d := []rune{'+', '-', '*', '/', '>', '<', '=', ',', '.', '(', ')', '[', ']', '{', '}', ';', '!'}
-	d := []rune{'>', '<', '=', '!'}
+	d := []rune{'>', '<', '=', '!', '&', '|'}
 	for _, r := range d {
 		(*m)[r] = t
 	}
@@ -54,6 +54,7 @@ func (sct *StateChangeTable) init() {
 	sct.t[1]['\n'], sct.t[1]['\r'], sct.t[1][' '], sct.t[1]['\t'] = 1, 1, 1, 1
 	sct.t[1]['\''], sct.t[1]['"'] = 5, 8
 	fillAlphabet(&sct.t[1], 2)
+	sct.t[1]['_'] = 2
 	fillNumber(&sct.t[1], 3)
 	fillSingleDelimiter(&sct.t[1], 11)
 	fillDoubleDelimiter(&sct.t[1], 18)
@@ -61,6 +62,7 @@ func (sct *StateChangeTable) init() {
 	fillAll(&sct.t[2], 12)
 	fillAlphabet(&sct.t[2], 2)
 	fillNumber(&sct.t[2], 2)
+	sct.t[2]['_'] = 2
 	// Node 3
 	fillAll(&sct.t[3], 14)
 	fillNumber(&sct.t[3], 3)
