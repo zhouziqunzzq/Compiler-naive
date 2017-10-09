@@ -1,6 +1,7 @@
 package Scanner
 
 import (
+	"math"
 	"strconv"
 )
 
@@ -21,6 +22,7 @@ func NewHandleFuncTable() *HandleFuncTable {
 	hft.t[19] = HandleDoubleDelimiter
 	// Line Comment and Block Comment
 	hft.t[22], hft.t[25] = HandleComment, HandleComment
+	hft.t[28] = HandleScientificNotationConstant
 	return &hft
 }
 
@@ -64,6 +66,43 @@ func HandleFloatConstant(s *Scanner) {
 		s.LastToken.Type = ERROR
 		return
 	}
+	var newID int
+	if i, ok := s.floatct.T[f]; ok {
+		newID = i
+	} else {
+		newID = len(s.floatct.T) + 1
+		s.floatct.T[f] = newID
+	}
+	s.LastToken.Type = FLOATCONSTANT
+	s.LastToken.ID = newID
+	s.LastToken.Word = str
+}
+
+func HandleScientificNotationConstant(s *Scanner) {
+	// Rewind the Scanner first
+	s.Rewind()
+	// Reset the Scanner in the end
+	defer s.Reset()
+	// Find 'e' pos
+	posE := 0
+	for ; posE < len(s.Buffer) && s.Buffer[posE] != 'e'; posE++ {
+	}
+	// Convert Buffer to a string
+	str := string(s.Buffer)
+	myBase := string(s.Buffer[:posE])
+	myExp := string(s.Buffer[posE+1:])
+	myBaseF, err := strconv.ParseFloat(myBase, 64)
+	if err != nil {
+		s.LastToken.Type = ERROR
+		return
+	}
+	myExpI, err := strconv.Atoi(myExp)
+	if err != nil {
+		s.LastToken.Type = ERROR
+		return
+	}
+	// Calculate float
+	f := myBaseF * math.Pow(10, float64(myExpI))
 	var newID int
 	if i, ok := s.floatct.T[f]; ok {
 		newID = i

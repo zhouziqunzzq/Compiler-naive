@@ -69,9 +69,11 @@ func (sct *StateChangeTable) init() {
 	fillAll(&sct.t[3], 14)
 	fillNumber(&sct.t[3], 3)
 	sct.t[3]['.'] = 4
+	sct.t[3]['e'] = 26
 	// Node 4
 	fillAll(&sct.t[4], 13)
 	fillNumber(&sct.t[4], 4)
+	sct.t[4]['e'] = 26
 	// Node 5
 	fillAll(&sct.t[5], 6)
 	sct.t[5]['\''] = 7
@@ -104,6 +106,12 @@ func (sct *StateChangeTable) init() {
 	sct.t[23]['*'] = 24
 	// Node 24
 	sct.t[24]['/'] = 25
+	// Node 26
+	fillNumber(&sct.t[26], 27)
+	sct.t[26]['-'] = 27
+	// Node 27
+	fillAll(&sct.t[27], 28)
+	fillNumber(&sct.t[27], 27)
 }
 
 func NewStateChangeTable() *StateChangeTable {
