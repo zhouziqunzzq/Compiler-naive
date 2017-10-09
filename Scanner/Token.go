@@ -10,6 +10,7 @@ const (
 	INTEGERCONSTANT = 5
 	FLOATCONSTANT   = 6
 	IDENTIFIER      = 7
+	COMMENT         = 8
 	ERROR           = -1
 	END             = -2
 )
@@ -22,6 +23,7 @@ var TokenTypeName = map[TokenType]string{
 	5:  "INTEGERCONSTANT",
 	6:  "FLOATCONSTANT",
 	7:  "IDENTIFIER",
+	8:  "COMMENT",
 	-1: "ERROR",
 	-2: "END",
 }

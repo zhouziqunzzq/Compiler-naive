@@ -19,6 +19,8 @@ func NewHandleFuncTable() *HandleFuncTable {
 	hft.t[16] = HandleStringConstant
 	hft.t[17] = HandleSingleDelimiter
 	hft.t[19] = HandleDoubleDelimiter
+	// Line Comment and Block Comment
+	hft.t[22], hft.t[25] = HandleComment, HandleComment
 	return &hft
 }
 
@@ -27,8 +29,8 @@ func HandleKeywordIdentifier(s *Scanner) {
 	s.Rewind()
 	// Reset the Scanner in the end
 	defer s.Reset()
-	// Convert buffer to a string
-	str := string(s.buffer)
+	// Convert Buffer to a string
+	str := string(s.Buffer)
 
 	if i, ok := s.kt.T[str]; ok {
 		// Keyword
@@ -55,8 +57,8 @@ func HandleFloatConstant(s *Scanner) {
 	s.Rewind()
 	// Reset the Scanner in the end
 	defer s.Reset()
-	// Convert buffer to a string
-	str := string(s.buffer)
+	// Convert Buffer to a string
+	str := string(s.Buffer)
 	f, err := strconv.ParseFloat(str, 64)
 	if err != nil {
 		s.LastToken.Type = ERROR
@@ -79,8 +81,8 @@ func HandleIntegerConstant(s *Scanner) {
 	s.Rewind()
 	// Reset the Scanner in the end
 	defer s.Reset()
-	// Convert buffer to a string
-	str := string(s.buffer)
+	// Convert Buffer to a string
+	str := string(s.Buffer)
 	n, err := strconv.Atoi(str)
 	if err != nil {
 		s.LastToken.Type = ERROR
@@ -103,10 +105,10 @@ func HandleCharConstant(s *Scanner) {
 	s.Rewind()
 	// Reset the Scanner in the end
 	defer s.Reset()
-	// Convert buffer to a char
+	// Convert Buffer to a char
 	var ch rune
-	if len(s.buffer) > 2 {
-		ch = s.buffer[1]
+	if len(s.Buffer) > 2 {
+		ch = s.Buffer[1]
 	}
 
 	var newID int
@@ -118,7 +120,7 @@ func HandleCharConstant(s *Scanner) {
 	}
 	s.LastToken.Type = CHARCONSTANT
 	s.LastToken.ID = newID
-	s.LastToken.Word = string(s.buffer)
+	s.LastToken.Word = string(s.Buffer)
 }
 
 func HandleStringConstant(s *Scanner) {
@@ -126,10 +128,10 @@ func HandleStringConstant(s *Scanner) {
 	s.Rewind()
 	// Reset the Scanner in the end
 	defer s.Reset()
-	// Convert buffer to a string
+	// Convert Buffer to a string
 	var str string
-	if len(s.buffer) > 2 {
-		str = string(s.buffer[1 : len(s.buffer)-1])
+	if len(s.Buffer) > 2 {
+		str = string(s.Buffer[1 : len(s.Buffer)-1])
 	}
 
 	var newID int
@@ -141,7 +143,7 @@ func HandleStringConstant(s *Scanner) {
 	}
 	s.LastToken.Type = STRINGCONSTANT
 	s.LastToken.ID = newID
-	s.LastToken.Word = string(s.buffer)
+	s.LastToken.Word = string(s.Buffer)
 }
 
 func HandleSingleDelimiter(s *Scanner) {
@@ -149,8 +151,8 @@ func HandleSingleDelimiter(s *Scanner) {
 	s.Rewind()
 	// Reset the Scanner in the end
 	defer s.Reset()
-	// Convert buffer to a string
-	str := string(s.buffer)
+	// Convert Buffer to a string
+	str := string(s.Buffer)
 
 	if i, ok := s.dt.T[str]; ok {
 		// Delimiter
@@ -167,8 +169,8 @@ func HandleDoubleDelimiter(s *Scanner) {
 	s.Rewind()
 	// Reset the Scanner in the end
 	defer s.Reset()
-	// Convert buffer to a string
-	str := string(s.buffer)
+	// Convert Buffer to a string
+	str := string(s.Buffer)
 
 	if i, ok := s.dt.T[str]; ok {
 		// Delimiter
@@ -181,6 +183,12 @@ func HandleDoubleDelimiter(s *Scanner) {
 }
 
 func HandleEmpty(s *Scanner) {
+	// Reset the Scanner
+	s.Reset()
+}
+
+func HandleComment(s *Scanner) {
+	s.LastToken.Type = COMMENT
 	// Reset the Scanner
 	s.Reset()
 }

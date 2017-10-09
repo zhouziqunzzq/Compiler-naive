@@ -1,7 +1,7 @@
 package Scanner
 
 const (
-	NodeNumber = 20
+	NodeNumber = 30
 )
 
 type StateChangeTable struct {
@@ -25,7 +25,7 @@ func fillNumber(m *map[rune]int, t int) {
 
 func fillSingleDelimiter(m *map[rune]int, t int) {
 	//d := []rune{'+', '-', '*', '/', '>', '<', '=', ',', '.', '(', ')', '[', ']', '{', '}', ';', '!'}
-	d := []rune{'+', '-', '*', '/', ',', '.', '(', ')', '[', ']', '{', '}', ';'}
+	d := []rune{'+', '-', '*', ',', '.', '(', ')', '[', ']', '{', '}', ';'}
 	for _, r := range d {
 		(*m)[r] = t
 	}
@@ -40,7 +40,7 @@ func fillDoubleDelimiter(m *map[rune]int, t int) {
 }
 
 func fillAll(m *map[rune]int, t int) {
-	for i := 0; i < 128; i++ {
+	for i := 0; i < 0xFFFF; i++ {
 		(*m)[rune(i)] = t
 	}
 }
@@ -53,6 +53,8 @@ func (sct *StateChangeTable) init() {
 	// Node 1
 	sct.t[1]['\n'], sct.t[1]['\r'], sct.t[1][' '], sct.t[1]['\t'] = 1, 1, 1, 1
 	sct.t[1]['\''], sct.t[1]['"'] = 5, 8
+	sct.t[1]['/'] = 20
+	sct.t[1]['#'] = 21
 	fillAlphabet(&sct.t[1], 2)
 	sct.t[1]['_'] = 2
 	fillNumber(&sct.t[1], 3)
@@ -90,6 +92,18 @@ func (sct *StateChangeTable) init() {
 	// Node 18
 	fillAll(&sct.t[18], 19)
 	fillDoubleDelimiter(&sct.t[18], 18)
+	// Node 20
+	fillAll(&sct.t[20], 17)
+	sct.t[20]['/'] = 21
+	sct.t[20]['*'] = 23
+	// Node 21
+	fillAll(&sct.t[21], 21)
+	sct.t[21]['\n'] = 22
+	// Node 23
+	fillAll(&sct.t[23], 23)
+	sct.t[23]['*'] = 24
+	// Node 24
+	sct.t[24]['/'] = 25
 }
 
 func NewStateChangeTable() *StateChangeTable {

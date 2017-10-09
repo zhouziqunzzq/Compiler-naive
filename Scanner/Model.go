@@ -7,11 +7,11 @@ import (
 
 type Scanner struct {
 	sct       *StateChangeTable
-	state     int
+	State     int
 	lastState int
 	CurIndex  int
 	content   []rune
-	buffer    []rune
+	Buffer    []rune
 	LastToken *Token
 	kt        *Table.KeywordTable
 	dt        *Table.DelimiterTable
@@ -26,8 +26,8 @@ type Scanner struct {
 func NewScanner(s *string) *Scanner {
 	var sc Scanner
 	sc.content = []rune(*s)
-	sc.buffer = make([]rune, 0, 256)
-	sc.state = 1
+	sc.Buffer = make([]rune, 0, 256)
+	sc.State = 1
 	sc.lastState = 1
 	sc.LastToken = new(Token)
 
@@ -43,12 +43,12 @@ func NewScanner(s *string) *Scanner {
 
 func (sc *Scanner) Rewind() {
 	sc.CurIndex--
-	sc.buffer = sc.buffer[:len(sc.buffer)-1]
+	sc.Buffer = sc.Buffer[:len(sc.Buffer)-1]
 }
 
 func (sc *Scanner) Reset() {
-	sc.buffer = sc.buffer[:0]
-	sc.state = 1
+	sc.Buffer = sc.Buffer[:0]
+	sc.State = 1
 }
 
 /*func (sc *Scanner) GetContent() []rune {
@@ -56,25 +56,25 @@ func (sc *Scanner) Reset() {
 }*/
 
 func (sc *Scanner) Next() {
-	for sc.CurIndex != len(sc.content) && !(sc.state == 1 && sc.lastState != 1) {
-		//fmt.Printf("CurState: %v, LastState: %v\n", sc.state, sc.lastState)
+	for sc.CurIndex != len(sc.content) && !(sc.State == 1 && sc.lastState != 1) {
+		//fmt.Printf("CurState: %v, LastState: %v\n", sc.State, sc.lastState)
 		// Update lastState
-		sc.lastState = sc.state
+		sc.lastState = sc.State
 		// Get a char and move forward
 		c := sc.content[sc.CurIndex]
-		sc.buffer = append(sc.buffer, c)
+		sc.Buffer = append(sc.Buffer, c)
 		sc.CurIndex++
 		//fmt.Printf("CurIndex: %v, CurChar: %v\n", sc.CurIndex, string(c))
-		// Jump to next state or error
-		if nextState, ok := sc.sct.t[sc.state][c]; ok {
-			sc.state = nextState
+		// Jump to next State or error
+		if nextState, ok := sc.sct.t[sc.State][c]; ok {
+			sc.State = nextState
 		} else {
 			//fmt.Println("NO NEXTSTATE FOUND!")
 			sc.LastToken.Type = ERROR
 			return
 		}
 		// Call handle func if needed
-		if f, ok := sc.hft.t[sc.state]; ok {
+		if f, ok := sc.hft.t[sc.State]; ok {
 			f(sc)
 		}
 	}
