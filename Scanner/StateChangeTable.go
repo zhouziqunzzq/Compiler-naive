@@ -103,9 +103,7 @@ func (sct *StateChangeTable) init() {
 	sct.t[21]['\n'] = 22
 	// Node 23
 	fillAll(&sct.t[23], 23)
-	sct.t[23]['*'] = 24
-	// Node 24
-	sct.t[24]['/'] = 25
+	sct.t[23]['/'] = 25
 	// Node 26
 	fillNumber(&sct.t[26], 27)
 	sct.t[26]['-'] = 27

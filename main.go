@@ -26,7 +26,9 @@ func main() {
 		scanner.Next()
 		if scanner.LastToken.Type == Scanner.ERROR {
 			fmt.Printf("ERROR: Invalid token found at %v.\n", scanner.CurIndex)
-			fmt.Printf("Invalid token: %v\n", string(scanner.Buffer[len(scanner.Buffer)-1]))
+			if len(scanner.Buffer) > 0 {
+				fmt.Printf("Invalid token: %v\n", string(scanner.Buffer[len(scanner.Buffer)-1]))
+			}
 			fmt.Printf("DEBUG INFO: State: %v\n", scanner.State)
 		} else if scanner.LastToken.Type == Scanner.COMMENT {
 			fmt.Printf("Comment ignored.\n")

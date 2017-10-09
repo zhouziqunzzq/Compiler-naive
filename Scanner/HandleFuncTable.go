@@ -227,6 +227,10 @@ func HandleEmpty(s *Scanner) {
 }
 
 func HandleComment(s *Scanner) {
+	if s.State == 25 && (len(s.Buffer) < 4 || s.Buffer[len(s.Buffer)-2] != '*') {
+		s.LastToken.Type = ERROR
+		return
+	}
 	s.LastToken.Type = COMMENT
 	// Reset the Scanner
 	s.Reset()
