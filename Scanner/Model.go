@@ -2,7 +2,7 @@ package Scanner
 
 import (
 	"fmt"
-	"github.com/zhouziqunzzq/Compiler/Table"
+	"github.com/zhouziqunzzq/Compiler/Scanner/Table"
 )
 
 type Scanner struct {
