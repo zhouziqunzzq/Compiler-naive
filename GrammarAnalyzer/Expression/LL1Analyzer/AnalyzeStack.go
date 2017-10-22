@@ -41,8 +41,13 @@ func (s *AnalyzeStack) IsEmpty() bool {
 }
 
 func (s *AnalyzeStack) Print() {
-	for i := 0; i < s.Top; i++ {
-		fmt.Printf("%v ", s.Stack[i])
+	if !s.IsEmpty() {
+		for i := 0; i < s.Top; i++ {
+			fmt.Printf("%v ", s.Stack[i])
+		}
+		fmt.Printf("\n")
+	} else {
+		fmt.Println("Stack is Empty")
 	}
-	fmt.Printf("\n")
+
 }

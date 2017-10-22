@@ -52,6 +52,9 @@ func NewLL1Analyzer(s *string) *LL1Analyzer {
 }
 
 func isSameVT(s string, t *Scanner.Token) bool {
+	if t.Type == Scanner.END {
+		return false
+	}
 	switch s {
 	case "w0":
 		return t.Word == "+" || t.Word == "-"
@@ -97,49 +100,46 @@ func getAnalyzeTable(la *LL1Analyzer, m *map[string]int) (v int, ok bool) {
 func (la *LL1Analyzer) Analyze() bool {
 	la.AS.Push("E")
 	la.AS.Print()
-	for {
-		la.S.Next()
-		//fmt.Println(la.S.LastToken.Word)
-		flag := false
-		for !la.AS.IsEmpty() {
-			x, ok := la.AS.Pop()
-			if ok == false {
+LABEL1:
+	la.S.Next()
+	//fmt.Println(la.S.LastToken.Word)
+LABEL2:
+	if la.AS.IsEmpty() {
+		if la.S.LastToken.Type == Scanner.END {
+			return true
+		} else {
+			return false
+		}
+	}
+	x, ok := la.AS.Pop()
+	if ok == false {
+		fmt.Println("!!!")
+		return false
+	}
+	//fmt.Printf("%v POP.\n", x)
+	if t, ok := la.NotationTypeTable[x]; ok {
+		if t == VT {
+			la.AS.Print()
+			if isSameVT(x, la.S.LastToken) {
+				goto LABEL1
+			} else {
 				return false
 			}
-			//fmt.Printf("%v POP.\n", x)
-			if t, ok := la.NotationTypeTable[x]; ok {
-				if t == VT {
-					if isSameVT(x, la.S.LastToken) {
-						flag = true
-						break
-					} else {
-						return false
-					}
-				} else if t == VN {
-					if m, ok := la.at.T[x][la.S.LastToken.Type]; ok {
-						if v, ok1 := getAnalyzeTable(la, &m); ok1 {
-							flag = true
-							pushReverse(la.AS, la.Grammar[v])
-							la.AS.Print()
-						} else {
-							return false
-						}
-					}
+		} else if t == VN {
+			if m, ok := la.at.T[x][la.S.LastToken.Type]; ok {
+				if v, ok1 := getAnalyzeTable(la, &m); ok1 {
+					pushReverse(la.AS, la.Grammar[v])
+					la.AS.Print()
+					goto LABEL2
 				} else {
 					return false
 				}
-			} else {
-				return false
 			}
-		}
-		if flag {
-			continue
 		} else {
-			if la.S.LastToken.Type == Scanner.END {
-				return true
-			} else {
-				return false
-			}
+			return false
 		}
+	} else {
+		return false
 	}
+	return false
 }
