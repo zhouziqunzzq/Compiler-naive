@@ -1,6 +1,7 @@
 package LL1Analyzer
 
 import (
+	"fmt"
 	"github.com/zhouziqunzzq/Compiler/Scanner"
 )
 
@@ -74,11 +75,31 @@ func pushReverse(as *AnalyzeStack, s []string) {
 	}
 }
 
+func getAnalyzeTable(la *LL1Analyzer, m *map[string]int) (v int, ok bool) {
+	if la.S.LastToken.Type == Scanner.INTEGERCONSTANT || la.S.LastToken.Type == Scanner.FLOATCONSTANT || la.S.LastToken.Type == Scanner.IDENTIFIER || la.S.LastToken.Type == Scanner.END {
+		if v1, ok1 := (*m)[""]; ok1 {
+			v = v1
+			ok = ok1
+		} else {
+			ok = false
+		}
+	} else {
+		if v1, ok1 := (*m)[la.S.LastToken.Word]; ok1 {
+			v = v1
+			ok = ok1
+		} else {
+			ok = false
+		}
+	}
+	return v, ok
+}
+
 func (la *LL1Analyzer) Analyze() bool {
 	la.AS.Push("E")
 	la.AS.Print()
 	for {
 		la.S.Next()
+		//fmt.Println(la.S.LastToken.Word)
 		flag := false
 		for !la.AS.IsEmpty() {
 			x, ok := la.AS.Pop()
@@ -96,26 +117,16 @@ func (la *LL1Analyzer) Analyze() bool {
 					}
 				} else if t == VN {
 					if m, ok := la.at.T[x][la.S.LastToken.Type]; ok {
-						if la.S.LastToken.Type == Scanner.INTEGERCONSTANT || la.S.LastToken.Type == Scanner.FLOATCONSTANT || la.S.LastToken.Type == Scanner.IDENTIFIER || la.S.LastToken.Type == Scanner.END {
-							if v, ok := m[""]; ok {
-								flag = true
-								pushReverse(la.AS, la.Grammar[v])
-								la.AS.Print()
-							} else {
-								return false
-							}
+						if v, ok1 := getAnalyzeTable(la, &m); ok1 {
+							flag = true
+							pushReverse(la.AS, la.Grammar[v])
+							la.AS.Print()
 						} else {
-							if v, ok := m[la.S.LastToken.Word]; ok {
-								flag = true
-								pushReverse(la.AS, la.Grammar[v])
-								la.AS.Print()
-							} else {
-								return false
-							}
+							return false
 						}
-					} else {
-						return false
 					}
+				} else {
+					return false
 				}
 			} else {
 				return false

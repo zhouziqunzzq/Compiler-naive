@@ -10,6 +10,7 @@ type Scanner struct {
 	State     int
 	lastState int
 	CurIndex  int
+	IsEnd     bool
 	content   []rune
 	Buffer    []rune
 	LastToken *Token
@@ -56,6 +57,10 @@ func (sc *Scanner) Reset() {
 }*/
 
 func (sc *Scanner) Next() {
+	if sc.IsEnd {
+		sc.LastToken.Type = END
+		return
+	}
 	for sc.CurIndex != len(sc.content) && !(sc.State == 1 && sc.lastState != 1) {
 		//fmt.Printf("CurState: %v, LastState: %v\n", sc.State, sc.lastState)
 		// Update lastState
@@ -79,8 +84,12 @@ func (sc *Scanner) Next() {
 		}
 	}
 	sc.lastState = 1
+	// Ignore all blank char left
+	for sc.CurIndex != len(sc.content) && (sc.content[sc.CurIndex] == ' ' || sc.content[sc.CurIndex] == '\n' || sc.content[sc.CurIndex] == '\r' || sc.content[sc.CurIndex] == '\t') {
+		sc.CurIndex++
+	}
 	if sc.CurIndex == len(sc.content) {
-		sc.LastToken.Type = END
+		sc.IsEnd = true
 	}
 }
 

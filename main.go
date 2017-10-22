@@ -30,7 +30,8 @@ func main() {
 		fmt.Println("Fail to open input file")
 		return
 	}
-	content := string(buf)
+	// Add extra \n to the end of file to prevent scanner's bug
+	content := string(buf) + "\n"
 	switch args[0] {
 	case "RA":
 		fmt.Println("Performing grammar analysis using Recursive Analyzer...")
